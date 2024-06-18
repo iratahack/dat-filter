@@ -97,7 +97,7 @@ foreach my $game ( $dom->findnodes('/datafile/game') ) {
     }
 
     # No adult, etc. games
-    if ( grep( /$name/, @exclude ) ) {
+    if ( grep( /^$name$/, @exclude ) ) {
         next;
     }
 
@@ -110,6 +110,10 @@ foreach my $game ( $dom->findnodes('/datafile/game') ) {
         || $desc =~ /quiz/i
         || $desc =~ /poker/i
         || $desc =~ /bubble system/i
+        || $desc =~ /demo/i
+        || $desc =~ /gambling/i
+        || $desc =~ /puzzle/i
+        || $desc =~ /beta/i
         || $desc =~ /mahjong/i )
     {
         next;

@@ -1,3 +1,5 @@
 dkongo
 dkongx
 pacman
+hunchbks
+centiped3

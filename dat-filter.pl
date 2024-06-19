@@ -3,8 +3,8 @@
 use 5.010;
 use strict;
 use warnings;
-
 use XML::LibXML;
+
 my $handle;
 my $filename = 'FinalBurn Neo (ClrMame Pro XML, Arcade only).dat';
 
@@ -79,20 +79,13 @@ foreach my $game ( $dom->findnodes('/datafile/game') ) {
     }
 
     # Always include
-    if ( grep( /$name/, @include ) ) {
+    if ( grep( /^$name$/, @include ) ) {
         if ($xml) {
             say $game;
         }
         else {
-            say $game->getAttribute("name");
+            say $name;
         }
-        next;
-    }
-
-    # Ignore decocass games
-    if (   $game->getAttribute('romof')
-        && $game->getAttribute('romof') =~ /decocass/ )
-    {
         next;
     }
 

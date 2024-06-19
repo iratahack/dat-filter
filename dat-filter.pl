@@ -59,78 +59,91 @@ if ($xml) {
     say $dom->findnodes('/datafile/header');
 }
 
-foreach my $game ( $dom->findnodes('/datafile/game') ) {
+# lr-fbneo
+scanDatFile("/datafile/game");
+# lr-mame2003
+scanDatFile("/mame/game");
 
-    my $name = $game->getAttribute('name');
-    my $desc = $game->findvalue("description");
+exit(0);
 
-    my ($video)  = $game->getChildrenByTagName("video");
-    my ($driver) = $game->getChildrenByTagName("driver");
+sub scanDatFile {
 
-    # Always for BIOS
-    if ( $game->getAttribute('isbios') ) {
-        if ($xml) {
-            say $game;
+    my $nodeName = $_[0];
+
+    foreach my $game ( $dom->findnodes("$nodeName") ) {
+
+        my $name = $game->getAttribute('name');
+        my $desc = $game->findvalue("description");
+
+        my ($video)  = $game->getChildrenByTagName("video");
+        my ($driver) = $game->getChildrenByTagName("driver");
+
+        # Always for BIOS
+        if ( $game->getAttribute('isbios') ) {
+            if ($xml) {
+                say $game;
+            }
+            else {
+                say $game->getAttribute("name");
+            }
+            next;
         }
-        else {
-            say $game->getAttribute("name");
+
+        # Always include
+        if ( grep( /^$name$/, @include ) ) {
+            if ($xml) {
+                say $game;
+            }
+            else {
+                say $name;
+            }
+            next;
         }
-        next;
-    }
 
-    # Always include
-    if ( grep( /^$name$/, @include ) ) {
-        if ($xml) {
-            say $game;
+        # No adult, etc. games
+        if ( grep( /^$name$/, @exclude ) ) {
+            next;
         }
-        else {
-            say $name;
+
+        # Ignore gambling, mahjong, quiz, trivia, etc.
+        if (   $desc =~ /prototype/i
+            || $desc =~ /hack/i
+            || $desc =~ /homebrew/i
+            || $desc =~ /casino/i
+            || $desc =~ /trivia/i
+            || $desc =~ /quiz/i
+            || $desc =~ /poker/i
+            || $desc =~ /bubble system/i
+            || $desc =~ /demo/i
+            || $desc =~ /gambling/i
+            || $desc =~ /puzzle/i
+            || $desc =~ /beta/i
+            || $desc =~ /mahjong/i )
+        {
+            next;
         }
-        next;
-    }
 
-    # No adult, etc. games
-    if ( grep( /^$name$/, @exclude ) ) {
-        next;
-    }
-
-    # Ignore gambling, mahjong, quiz, trivia, etc.
-    if (   $desc =~ /prototype/i
-        || $desc =~ /hack/i
-        || $desc =~ /homebrew/i
-        || $desc =~ /casino/i
-        || $desc =~ /trivia/i
-        || $desc =~ /quiz/i
-        || $desc =~ /poker/i
-        || $desc =~ /bubble system/i
-        || $desc =~ /demo/i
-        || $desc =~ /gambling/i
-        || $desc =~ /puzzle/i
-        || $desc =~ /beta/i
-        || $desc =~ /mahjong/i )
-    {
-        next;
-    }
-
-    # Ignore clones
-    if ( $nc && $game->getAttribute('cloneof') ) {
-        next;
-    }
-
-    if ( $orientation && $video->{orientation} ne $orientation ) {
-        next;
-    }
-
-    if ( $driver->getAttribute("status") eq "good" ) {
-        if ($xml) {
-            say $game;
+        # Ignore clones
+        if ( $nc && $game->getAttribute('cloneof') ) {
+            next;
         }
-        else {
-            say $game->getAttribute("name");
+
+        if ( $orientation && defined $video && $video->{orientation} ne $orientation ) {
+            next;
+        }
+
+        if ( defined $driver && $driver->getAttribute("status") eq "good" ) {
+            if ($xml) {
+                say $game;
+            }
+            else {
+                say $game->getAttribute("name");
+            }
         }
     }
-}
 
-if ($xml) {
-    say '</datafile>';
+    if ($xml) {
+        say '</datafile>';
+    }
+
 }

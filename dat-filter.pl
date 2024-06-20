@@ -18,7 +18,7 @@ close $handle;
 my $xml         = 0;
 my $nc          = 0;
 my $orientation = "";
-foreach my $param (@ARGV) {
+while (my $param = shift @ARGV) {
     if ( $param eq "-x" ) {
         $xml = 1;
     }
@@ -26,8 +26,7 @@ foreach my $param (@ARGV) {
         $nc = 1;
     }
     elsif ( $param eq "-dat" ) {
-        shift(@ARGV);
-        $filename = $ARGV[0];
+        $filename = shift @ARGV;
     }
     elsif ( $param eq "-v" ) {
         $orientation = "vertical";

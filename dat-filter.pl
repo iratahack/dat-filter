@@ -61,6 +61,7 @@ if ($xml) {
 
 # lr-fbneo
 scanDatFile("/datafile/game");
+
 # lr-mame2003
 scanDatFile("/mame/game");
 
@@ -79,7 +80,13 @@ sub scanDatFile {
         my ($driver) = $game->getChildrenByTagName("driver");
 
         # Always for BIOS
-        if ( $game->getAttribute('isbios') ) {
+        if (
+            ( defined $game->getAttribute('isbios')
+                && $game->getAttribute('isbios') eq "yes" )
+            || ( defined $game->getAttribute('runnable')
+                && $game->getAttribute('runnable') eq "no" )
+          )
+        {
             if ($xml) {
                 say $game;
             }
@@ -128,7 +135,10 @@ sub scanDatFile {
             next;
         }
 
-        if ( $orientation && defined $video && $video->{orientation} ne $orientation ) {
+        if (   $orientation
+            && defined $video
+            && $video->{orientation} ne $orientation )
+        {
             next;
         }
 

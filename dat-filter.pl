@@ -17,6 +17,7 @@ close $handle;
 
 my $xml         = 0;
 my $nc          = 0;
+my $nb          = 0;
 my $orientation = "";
 while (my $param = shift @ARGV) {
     if ( $param eq "-x" ) {
@@ -24,6 +25,9 @@ while (my $param = shift @ARGV) {
     }
     elsif ( $param eq "-nc" ) {
         $nc = 1;
+    }
+    elsif ( $param eq "-nb" ) {
+        $nb = 1;
     }
     elsif ( $param eq "-dat" ) {
         $filename = shift @ARGV;
@@ -86,6 +90,11 @@ sub scanDatFile {
                 && $game->getAttribute('runnable') eq "no" )
           )
         {
+	    # Ignore BIOS
+	    if ( $nb ) {
+	        next;
+	    }
+
             if ($xml) {
                 say $game;
             }
